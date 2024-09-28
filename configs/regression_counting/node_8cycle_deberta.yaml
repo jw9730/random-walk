@@ -1,0 +1,61 @@
+# environment arguments
+seed: 42
+precision: bf16-mixed
+strategy: ddp
+accelerator: gpu
+compile: False
+
+# data arguments
+dataset: regression_counting
+name_postfix: 8_cycle_connected
+task_name: cycle8
+task_level: v
+num_workers: 16
+global_batch_size: 8
+gradient_clip_val: 2
+
+# model arguments
+backbone: microsoft/deberta-base
+pretrained: True
+head_dropout: 0.0
+deberta_use_pooler: True  # this is for testing old checkpoints, should be removed in the future
+
+# random walk arguments
+walk_type: min_degree
+walk_length: 200
+restart_prob: 0.01
+no_backtrack: True
+neighbors: True
+n_walks: 1
+eval_n_walks: 8
+
+# tokenization arguments
+vocab_size: -1
+max_length: 512
+pretrained_tokenizer: True
+
+# training arguments
+n_steps: 250000
+optimizer: adamw
+lr: 0.00002
+lr_pretrained: 0.00002
+lr_schedule: linear
+lr_warmup: 5000
+lr_warmup_scale: 0.
+schedule_from: 0
+weight_decay: 0.01
+lr_decay_degree: 0.9
+early_stopping_monitor: validation/cycle8_iso_v_mae
+early_stopping_mode: min
+early_stopping_patience: 100
+
+# logging arguments
+root_dir: experiments
+data_dir: data
+log_dir: logs
+save_dir: checkpoints
+load_dir: checkpoints
+log_iter: 100
+val_iter: 1000
+save_iter: 1000
+load_step: -1
