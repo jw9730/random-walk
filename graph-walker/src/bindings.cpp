@@ -24,4 +24,8 @@ PYBIND11_MODULE(_walker, m)
     m.def("as_text_with_neighbors", &asTextNeighbors, "convert random walks to text with neighbors");
     m.def("as_text_arxiv", &asTextArxiv, "convert ogbn-arxiv random walks to text");
     m.def("as_text_with_neighbors_arxiv", &asTextNeighborsArxiv, "convert ogbn-arxiv random walks to text with neighbors");
+    m.def("as_text_amazon", &asTextAmazon, "convert amazon-ratings random walks to text");
+    m.def("as_text_with_neighbors_amazon", &asTextNeighborsAmazon, "convert amazon-ratings random walks to text with neighbors");
+    m.def("as_text_peptides", &asTextPeptides, "convert peptides random walks to text");
+    m.def("as_text_with_neighbors_peptides", &asTextNeighborsPeptides, "convert peptides random walks to text with neighbors");
 }

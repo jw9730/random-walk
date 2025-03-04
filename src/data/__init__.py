@@ -6,6 +6,7 @@ from .graph_separation_csl import GraphSeparationCSLDataset, GraphSeparationCSLW
 from .graph_separation_sr16 import GraphSeparationSR16Dataset, GraphSeparationSR16Walker
 from .graph_separation_sr25 import GraphSeparationSR25Dataset, GraphSeparationSR25Walker
 from .regression_counting import RegressionCountingDataset, RegressionCountingWalker
+from .classification_peptidesfunc import ClassificationPeptidesfuncDataset, ClassificationPeptidesfuncWalker
 
 
 def setup_data_and_walker(dataset: str, root_dir: str, config) -> Tuple[DatasetBuilder, Walker]:
@@ -31,6 +32,9 @@ def setup_data_and_walker(dataset: str, root_dir: str, config) -> Tuple[DatasetB
         ds_builder = DatasetBuilder(dataset, is_pyg, RegressionCountingDataset, root_dir, config)
         walker.register_ds_builder(ds_builder)
         return ds_builder, walker
-    # non-pyg datasets
-    is_pyg = False
+    if dataset == 'classification_peptidesfunc':
+        walker = ClassificationPeptidesfuncWalker(config)
+        ds_builder = DatasetBuilder(dataset, is_pyg, ClassificationPeptidesfuncDataset, root_dir, config)
+        walker.register_ds_builder(ds_builder)
+        return ds_builder, walker
     raise NotImplementedError(f"Dataset ({dataset}) not supported!")

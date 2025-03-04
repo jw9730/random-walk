@@ -38,6 +38,7 @@ class Walker:
         self.eval_n_walks = getattr(config, 'eval_n_walks', self.n_walks)
         if config.test_mode:
             self.eval_n_walks = getattr(config, 'test_n_walks', self.eval_n_walks)
+        self.global_test_metric = False
 
     @property
     def name(self):
@@ -137,7 +138,7 @@ class Walker:
         reduce='mean'
     ) -> Tensor:
         """Pool source to target."""
-        assert target_ids.max().item() <= n_targets <= target_ids.max().item() + 1
+        # assert target_ids.max().item() <= n_targets <= target_ids.max().item() + 1
         assert source.ndim == 2
         dim = source.shape[1]
         output = torch.zeros(n_targets + 1, dim, dtype=source.dtype, device=source.device)
@@ -157,5 +158,9 @@ class Walker:
         raise NotImplementedError
 
     def evaluator(self, y_hat: Any, y: Any) -> Union[Tensor, Dict]:
+        """Compute metric between prediction y_hat and target y"""
+        raise NotImplementedError
+
+    def global_evaluator(self, y_hat: List, y: List) -> Dict:
         """Compute metric between prediction y_hat and target y"""
         raise NotImplementedError

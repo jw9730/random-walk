@@ -36,12 +36,11 @@ class GraphSeparationSR25Dataset(InMemoryDataset):
     """Implementation from ELENE (SRDataset):
     https://github.com/nur-ag/ELENE/blob/main/core/data.py"""
 
-    def __init__(self, root, split, config, repeat=1000):
+    def __init__(self, root, split, config):
         # prior works use training set for validation and testing
         # https://github.com/LingxiaoShawn/GNNAsKernel/blob/main/train/sr25.py
         # https://github.com/nur-ag/ELENE/blob/main/train/sr25.py
         self.name = 'SR25'
-        self.repeat = repeat
         super().__init__(root)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
@@ -59,7 +58,7 @@ class GraphSeparationSR25Dataset(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return f'data_{self.repeat}x.pt'
+        return 'data.pt'
 
     def download(self):
         copy_tree((Path(__file__).parent / "SR25").as_posix(),
@@ -74,7 +73,7 @@ class GraphSeparationSR25Dataset(InMemoryDataset):
             y = torch.tensor([i], dtype=torch.long)
             edge_index = to_undirected(torch.tensor(list(data.edges())).transpose(1, 0))
             data_list.append(Data(edge_index=edge_index, x=x, y=y))
-        data_list = data_list * self.repeat
+        data_list = data_list * 1000
 
         if self.pre_filter is not None:
             data_list = [data for data in data_list if self.pre_filter(data)]

@@ -31,3 +31,35 @@ std::vector<std::string> asTextNeighborsArxiv(
     std::vector<std::string> input_title,
     std::vector<std::string> input_abstract,
     std::vector<std::string> input_labels);
+std::vector<std::string> asTextAmazon(
+    py::array_t<uint32_t> _walks,
+    py::array_t<bool> _restarts,
+    py::array_t<uint32_t> _indices,
+    std::vector<std::string> product,
+    std::vector<std::string> input_product,
+    std::vector<std::string> input_labels);
+std::vector<std::string> asTextNeighborsAmazon(
+    py::array_t<uint32_t> _walks,
+    py::array_t<bool> _restarts,
+    py::array_t<bool> _neighbors,
+    py::array_t<uint32_t> _indices,
+    std::vector<std::string> product,
+    std::vector<std::string> input_product,
+    std::vector<std::string> input_labels);
+std::vector<std::string> asTextPeptides(
+    py::array_t<uint32_t> _walks,
+    py::array_t<bool> _restarts,
+    py::array_t<uint32_t> _indices,
+    std::vector<std::string> node_attr,
+    py::array_t<uint32_t> _indptr_edge_attr,
+    py::array_t<uint32_t> _indices_edge_attr,
+    std::vector<std::string> edge_attr);
+std::vector<std::string> asTextNeighborsPeptides(
+    py::array_t<uint32_t> _walks,
+    py::array_t<bool> _restarts,
+    py::array_t<bool> _neighbors,
+    py::array_t<uint32_t> _indices,
+    std::vector<std::string> node_attr,
+    py::array_t<uint32_t> _indptr_edge_attr,
+    py::array_t<uint32_t> _indices_edge_attr,
+    std::vector<std::string> edge_attr);

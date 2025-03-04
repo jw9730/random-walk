@@ -34,12 +34,11 @@ class GraphSeparationSR16Dataset(InMemoryDataset):
     """Example from ELENE (Figure 1):
     https://arxiv.org/pdf/2312.05905v1.pdf"""
 
-    def __init__(self, root, split, config, repeat=1000):
+    def __init__(self, root, split, config):
         # prior works use training set for validation and testing
         # https://github.com/LingxiaoShawn/GNNAsKernel/blob/main/train/sr25.py
         # https://github.com/nur-ag/ELENE/blob/main/train/sr25.py
         self.name = 'SR16'
-        self.repeat = repeat
         super().__init__(root)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
@@ -49,7 +48,7 @@ class GraphSeparationSR16Dataset(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return f'data_{self.repeat}x.pt'
+        return 'data.pt'
 
     def process(self):
         shrikhande_graph = nx.Graph()
@@ -84,7 +83,7 @@ class GraphSeparationSR16Dataset(InMemoryDataset):
             edge_index = torch.tensor(list(data.edges())).transpose(1, 0) - 1
             edge_index = to_undirected(edge_index)
             data_list.append(Data(edge_index=edge_index, x=x, y=y))
-        data_list = data_list * self.repeat
+        data_list = data_list * 1000
 
         if self.pre_filter is not None:
             data_list = [data for data in data_list if self.pre_filter(data)]

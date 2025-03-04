@@ -8,6 +8,7 @@ import torch
 import lightning as L
 
 from src.train import configure_data, configure_model, configure_experiment
+torch._dynamo.config.optimize_ddp = False
 
 
 def str2bool(v: str) -> bool:
@@ -112,6 +113,7 @@ def get_config() -> edict:
     # create experiment name
     if config.exp_name == '':
         config.exp_name = f"{config.backbone.replace('/', '_')},pt_{config.pretrained}," \
+            + ("tokpt_False," if not config.pretrained_tokenizer else '') \
             + (f"drop_{config.head_dropout}," if config.head_dropout > 0 else '') \
             + (f"l_{config.max_length}," if config.max_length > 0 else '')
         config.exp_name += f"w_{config.walk_type}," \
@@ -162,6 +164,12 @@ def get_config() -> edict:
         config.save_iter = 5
         config.exp_name = '_debug_' + config.exp_name
 
+    # setup HPU accelerator if specified
+    if config.accelerator == 'hpu':
+        from lightning_habana.pytorch.accelerator import HPUAccelerator  # pylint: disable=import-error,import-outside-toplevel
+        config.accelerator = HPUAccelerator()
+        config.strategy = 'auto'
+
     return config
 
 
@@ -171,6 +179,11 @@ def main(config):
 
     # utilize Tensor Cores (RTX 3090)
     torch.set_float32_matmul_precision('medium')
+
+    if config.compile:
+        if config.test_mode:
+            warnings.warn("Test mode, compile flag ignored.")
+            config.compile = False
 
     # configure data and task
     datamodule, walker = configure_data(config)
@@ -182,13 +195,10 @@ def main(config):
     logger, log_dir, callbacks, precision, strategy, plugins = configure_experiment(config, model)
 
     if config.compile:
-        if config.test_mode:
-            warnings.warn("Test mode, compile flag ignored.")
-        else:
-            # compile the model and *step (training/validation/test/prediction)
-            # can lead to nondeterministic behavior
-            warnings.warn("Compile mode enabled. This can lead to nondeterministic behavior.")
-            model = torch.compile(model)
+        # compile the model and *step (training/validation/test/prediction)
+        # can lead to nondeterministic behavior
+        warnings.warn("Compile mode enabled. This can lead to nondeterministic behavior.")
+        model = torch.compile(model)
 
     if config.test_mode:
         # test routine reproducibility (this and deterministic=True in trainer)

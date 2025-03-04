@@ -35,9 +35,8 @@ class GraphSeparationCSLDataset(InMemoryDataset):
     root_url = 'https://data.pyg.org/datasets/benchmarking-gnns'
     urls = {'CSL': 'https://www.dropbox.com/s/rnbkp5ubgk82ocu/CSL.zip?dl=1'}
 
-    def __init__(self, root, split, config, repeat=100):
+    def __init__(self, root, split, config):
         self.name = 'CSL'
-        self.repeat = repeat
         super().__init__(root)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
@@ -56,7 +55,7 @@ class GraphSeparationCSLDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return f'data_{self.repeat}x.pt'
+        return 'data.pt'
 
     def download(self) -> None:
         path = download_url(self.urls[self.name], self.raw_dir)
@@ -65,7 +64,7 @@ class GraphSeparationCSLDataset(InMemoryDataset):
 
     def process(self) -> None:
         data_list = self.process_csl()
-        data_list = data_list * self.repeat
+        data_list = data_list * 100
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
 

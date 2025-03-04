@@ -156,13 +156,13 @@ def setup_callbacks(save_dir, early_stopping_monitor, early_stopping_mode, early
         if early_stopping_monitor is not None:
             checkpoint_callback = ModelCheckpoint(
                 dirpath=save_dir,
-                filename='best',
+                filename=f'best-{{global_step}}-{{{early_stopping_monitor}}}',
                 monitor=early_stopping_monitor,
                 save_last=False,
-                save_top_k=1,
+                save_top_k=10,
                 mode=early_stopping_mode,
-                auto_insert_metric_name=False,
-                every_n_epochs=1
+                auto_insert_metric_name=True,
+                # every_n_epochs=1
             )
             checkpoint_callback.CHECKPOINT_JOIN_CHAR = "_"
             callbacks.append(checkpoint_callback)

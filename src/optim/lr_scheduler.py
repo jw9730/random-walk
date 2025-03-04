@@ -107,19 +107,19 @@ class CustomLRScheduler():
         if self.warmup_iters > 0 and self.iter < self.warmup_iters and self.mode != 'sqroot':
             self.lr = self.base_lr * 1.0 * self.iter / self.warmup_iters
 
-    def _adjust_learning_rate(self, optimizer, lr):
+    def _adjust_learning_rate(self, lr):
         assert lr >= 0
-        for i, _ in enumerate(optimizer.param_groups):
-            optimizer.param_groups[i]['lr'] = lr * self.lr_coefs[i]
+        for i, _ in enumerate(self.optimizer.param_groups):
+            self.optimizer.param_groups[i]['lr'] = lr * self.lr_coefs[i]
 
     def step(self, step=-1):
         """Update current step"""
         self.iter = step if step >= 0 else self.iter + 1
         self._lr_schedule()
         self._lr_warmup()
-        self._adjust_learning_rate(self.optimizer, self.lr)
+        self._adjust_learning_rate(self.lr)
 
     def reset(self):
         self.lr = self.base_lr
         self.iter = 0
-        self._adjust_learning_rate(self.optimizer, self.lr)
+        self._adjust_learning_rate(self.lr)

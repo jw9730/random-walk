@@ -140,6 +140,7 @@ tokenizer*.json
 *llama-3-*
 params.json
 checklist.chk
-# src_transductive_classification/finetuning_experiments/datasets/**
-# !src_transductive_classification/datasets/**
-src_transductive_classification
+src_llama3/finetuning_experiments/datasets/**
+!src_llama3/data/**
+!src_mini/link_prediction/pytorch_DGCNN/lib
+!src_mini/link_prediction/pytorch_DGCNN/lib/build

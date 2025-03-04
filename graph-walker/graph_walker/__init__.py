@@ -20,6 +20,10 @@ from _walker import as_text as _as_text
 from _walker import as_text_with_neighbors as _as_text_with_neighbors
 from _walker import as_text_arxiv as _as_text_arxiv
 from _walker import as_text_with_neighbors_arxiv as _as_text_with_neighbors_arxiv
+from _walker import as_text_amazon as _as_text_amazon
+from _walker import as_text_with_neighbors_amazon as _as_text_with_neighbors_amazon
+from _walker import as_text_peptides as _as_text_peptides
+from _walker import as_text_with_neighbors_peptides as _as_text_with_neighbors_peptides
 
 from .preprocessing import get_normalized_adjacency, get_normalized_minimum_degree
 
@@ -210,6 +214,37 @@ def random_walks_with_precomputed_probs(
     return walks, restarts
 
 
+def as_text_peptides(
+    walks,
+    restarts,
+    G,
+    node_attr_str,
+    indptr_edge_attr,
+    indices_edge_attr,
+    edge_attr_str,
+    include_neighbors=True,
+    verbose=True
+):
+    start_time = time.time()
+
+    if include_neighbors:
+        assert not nx.is_directed(G), "Graph must be undirected"
+        A = nx.adjacency_matrix(G)
+        indptr = A.indptr.astype(np.uint32)
+        indices = A.indices.astype(np.uint32)
+        named_walks, walks, restarts, neighbors = _anonymize_with_neighbors(walks, restarts, indptr, indices)
+        walks_text = _as_text_with_neighbors_peptides(named_walks, restarts, neighbors, walks, node_attr_str, indptr_edge_attr, indices_edge_attr, edge_attr_str)
+    else:
+        named_walks = _anonymize(walks)
+        walks_text = _as_text_peptides(named_walks, restarts, walks, node_attr_str, indptr_edge_attr, indices_edge_attr, edge_attr_str)
+
+    if verbose:
+        duration = time.time() - start_time
+        print(f"Text conversion - T={duration:.2f}s")
+
+    return walks_text
+
+
 def as_text_arxiv(
     walks,
     restarts,
@@ -235,6 +270,33 @@ def as_text_arxiv(
         named_walks = _anonymize(walks)
         backwards = _parse_directions(walks, restarts, indptr_directed, indices_directed)
         walks_text = _as_text_arxiv(named_walks, backwards, restarts, walks, title, abstract, input_title, input_abstract, input_label)
+
+    if verbose:
+        duration = time.time() - start_time
+        print(f"Text conversion - T={duration:.2f}s")
+
+    return walks_text
+
+
+def as_text_amazon(
+    walks,
+    restarts,
+    indptr,
+    indices,
+    product,
+    input_product,
+    input_label,
+    include_neighbors=True,
+    verbose=True
+):
+    start_time = time.time()
+
+    if include_neighbors:
+        named_walks, walks, restarts, neighbors = _anonymize_with_neighbors(walks, restarts, indptr, indices)
+        walks_text = _as_text_with_neighbors_amazon(named_walks, restarts, neighbors, walks, product, input_product, input_label)
+    else:
+        named_walks = _anonymize(walks)
+        walks_text = _as_text_amazon(named_walks, restarts, walks, product, input_product, input_label)
 
     if verbose:
         duration = time.time() - start_time

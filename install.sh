@@ -1,7 +1,6 @@
 set -e
 pip3 install numpy==1.26.4
 pip3 install torch==2.2.0+cu118 torchvision==0.17.0+cu118 torchaudio==2.2.0+cu118 --index-url https://download.pytorch.org/whl/cu118
-pip3 install xformers==0.0.24+cu118 --index-url https://download.pytorch.org/whl/cu118
 pip3 install lightning==2.2.0.post0
 pip3 install transformers==4.40.1
 pip3 install causal-conv1d==1.2.0.post2 mamba-ssm==1.2.0.post1

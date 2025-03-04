@@ -182,7 +182,6 @@ wcwidth==0.2.6
 websocket-client==1.6.1
 websockets==11.0.3
 Werkzeug==2.3.6
-xformers==0.0.24+cu118
 xmod==1.8.1
 xxhash==3.3.0
 yacs==0.1.8
